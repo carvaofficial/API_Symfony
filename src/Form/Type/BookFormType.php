@@ -2,7 +2,7 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Book;
+use App\Form\Model\BookDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -12,13 +12,15 @@ class BookFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('title', TextType::class);
+        $builder
+            ->add('title', TextType::class)
+            ->add('base64Image', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Book::class,
+            'data_class' => BookDTO::class,
         ]);
     }
 
