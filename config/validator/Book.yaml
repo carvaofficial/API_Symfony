@@ -1,0 +1,11 @@
+App\Entity\Book:
+  properties:
+    title:
+      - NotBlank: ~
+      - Length:
+        min: 3
+        max: 250
+        minMessage: "The title must be at least {{limit}} characters long"
+        maxMessage: "The title cannot be longer than {{limit}} characters"
+        allowEmptyString: false
+#FIXME no quiere ir, salta al validar: "Symfony\Component\Validator\Mapping\ClassMetadata::addPropertyConstraint(): Argument #2 ($constraint) must be of type Symfony\Component\Validator\Constraint, array given, called in C:\Users\carva\source\repos\API_Symfony\vendor\symfony\validator\Mapping\Loader\YamlFileLoader.php on line 168" at C:\Users\carva\source\repos\API_Symfony\vendor\symfony\validator\Mapping\ClassMetadata.php line 225

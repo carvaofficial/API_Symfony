@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Book;
+use App\Form\Type\BookFormType;
 use App\Repository\BookRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -16,7 +17,7 @@ class BooksController extends AbstractFOSRestController
      *@Rest\Get(path="/books")
      *@Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
      *  */
-    public function getActions(BookRepository $bookRepository)
+    public function getAction(BookRepository $bookRepository)
     {
         return $bookRepository->findAll();
     }
@@ -25,26 +26,42 @@ class BooksController extends AbstractFOSRestController
      *@Rest\Post(path="/books")
      *@Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
      *  */
-    public function postActions(Request $request, EntityManagerInterface $em)
+    // public function postAction(Request $request, EntityManagerInterface $em)
+    // {
+    //     $response = new JsonResponse();
+    //     $title = $request->get('title', null);
+
+    //     if (empty($title)) {
+    //         $response->setData([
+    //             'success' => false,
+    //             'error' => 'Tittle cannot be empty',
+    //             'data' => null
+    //         ]);
+
+    //         return $response;
+    //     }
+
+    //     $book = new Book();
+    //     $book->setTitle($title);
+    //     $em->persist($book);
+    //     $em->flush();
+
+    //     return $book;
+    // }
+    public function postAction(EntityManagerInterface $em, Request $request)
     {
-        $response = new JsonResponse();
-        $title = $request->get('title', null);
+        $book = new Book();
 
-        if (empty($title)) {
-            $response->setData([
-                'success' => false,
-                'error' => 'Tittle cannot be empty',
-                'data' => null
-            ]);
+        $form = $this->createForm(BookFormType::class, $book);
+        $form->handleRequest($request);
 
-            return $response;
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($book);
+            $em->flush();
+
+            return $book;
         }
 
-        $book = new Book();
-        $book->setTitle($title);
-        $em->persist($book);
-        $em->flush();
-
-        return $book;
+        return $form;
     }
 }
