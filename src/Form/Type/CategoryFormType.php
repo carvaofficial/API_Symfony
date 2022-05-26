@@ -2,31 +2,25 @@
 
 namespace App\Form\Type;
 
-use App\Form\Model\BookDTO;
+use App\Form\Model\CategoryDTO;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class BookFormType extends AbstractType
+class CategoryFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', TextType::class)
-            ->add('base64Image', TextType::class)
-            ->add('categories', CollectionType::class, [
-                'allow_add' => true,
-                'allow_delete' => true,
-                'entry_type' => CategoryFormType::class,
-            ]);
+            ->add('id', TextType::class)
+            ->add('name', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => BookDTO::class,
+            'data_class' => CategoryDTO::class,
         ]);
     }
 
