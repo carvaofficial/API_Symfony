@@ -27,6 +27,7 @@ class BookFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => BookDTO::class,
+            'csrf_protection' => false
         ]);
     }
 

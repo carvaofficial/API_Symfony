@@ -57,6 +57,16 @@ class BooksController extends AbstractFOSRestController
     }
 
     /**
+     *@Rest\Get(path="/books/{id}", requirements={"id"="\d+"})
+     *@Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
+     *  */
+    public function getSingleAction(int $id, BookFormProcessor $bfp, BookManager $bookManager)
+    {
+        $book = $bookManager->find($id);
+        return !$book ? View::create('Book not found', Response::HTTP_BAD_REQUEST) : $book;
+    }
+
+    /**
      *@Rest\Post(path="/books/{id}", requirements={"id"="\d+"})
      *@Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
      *  */
