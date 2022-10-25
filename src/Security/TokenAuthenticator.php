@@ -15,7 +15,12 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class TokenAuthenticator extends AbstractAuthenticator
 {
-    const TOKEN = 'LIBRARIFY';
+    private $apiToken;
+
+    public function __construct($apiToken)
+    {
+        $this->apiToken = $apiToken;
+    }
 
     /**
      * Called on every request to decide if this authenticator should be
