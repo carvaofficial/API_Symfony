@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 /**
+ * @deprecated
  * Esta clase sólo funciona en versiones inferiores a Symfony 6.0, debido a un deprecated de la clase
  * AbstractGuardAuthenticator y su declaración en security.yaml
  */

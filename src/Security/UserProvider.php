@@ -54,7 +54,7 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
         // return new User();
 
         if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Invalid user class "%s".', get_class($user)));
+            throw new UnsupportedUserException(sprintf('Invalid user class "%s".', \get_class($user)));
         }
 
         // Return a User object after making sure its data is "fresh".

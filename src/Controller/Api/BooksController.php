@@ -73,7 +73,9 @@ class BooksController extends AbstractFOSRestController
     public function editAction(int $id, BookFormProcessor $bfp, BookManager $bookManager, Request $request)
     {
         $book = $bookManager->find($id);
-        if (!$book) return View::create('Book not found', Response::HTTP_BAD_REQUEST);
+        if (!$book) {
+            return View::create('Book not found', Response::HTTP_BAD_REQUEST);
+        }
 
         [$book, $error] = ($bfp)($book, $request);
 
@@ -87,7 +89,9 @@ class BooksController extends AbstractFOSRestController
     public function deleteAction(int $id, BookManager $bookManager, Request $request)
     {
         $book = $bookManager->find($id);
-        if (!$book) return View::create('Book not found', Response::HTTP_BAD_REQUEST);
+        if (!$book) {
+            return View::create('Book not found', Response::HTTP_BAD_REQUEST);
+        }
 
         $bookManager->delete($book);
 

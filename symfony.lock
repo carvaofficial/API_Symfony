@@ -126,8 +126,20 @@
     "phpdocumentor/type-resolver": {
         "version": "1.6.1"
     },
+    "phpstan/extension-installer": {
+        "version": "1.2.0"
+    },
     "phpstan/phpdoc-parser": {
         "version": "1.5.1"
+    },
+    "phpstan/phpstan": {
+        "version": "1.8.11"
+    },
+    "phpstan/phpstan-doctrine": {
+        "version": "1.3.19"
+    },
+    "phpstan/phpstan-symfony": {
+        "version": "1.2.14"
     },
     "psr/cache": {
         "version": "3.0.0"
@@ -407,6 +419,9 @@
     },
     "symfony/yaml": {
         "version": "v6.0.3"
+    },
+    "symplify/easy-coding-standard": {
+        "version": "11.1.12"
     },
     "twig/extra-bundle": {
         "version": "v3.4.0"
