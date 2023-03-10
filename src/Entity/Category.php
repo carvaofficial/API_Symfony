@@ -2,31 +2,25 @@
 
 namespace App\Entity;
 
-use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
-#[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
-    #[ORM\ManyToMany(targetEntity: Book::class, mappedBy: 'Categories')]
     private $books;
 
-    public function __construct()
+    public function __construct(UuidInterface $uuidInterface)
     {
+        $this->id = $uuidInterface;
         $this->books = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }

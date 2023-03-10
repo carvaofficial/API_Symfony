@@ -8,6 +8,7 @@ use App\Form\Model\CategoryDTO;
 use App\Form\Type\BookFormType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -50,7 +51,7 @@ class BookFormProcessor
             // Remove categories
             foreach ($originalCategories as $originalCategoryDTO) {
                 if (!\in_array($originalCategoryDTO, $bookDTO->categories)) {
-                    $category = $this->categoryManager->find($originalCategoryDTO->id);
+                    $category = $this->categoryManager->find(Uuid::fromString($originalCategoryDTO->id));
                     $book->removeCategory($category);
                 }
             }
@@ -58,7 +59,7 @@ class BookFormProcessor
             // Add categories
             foreach ($bookDTO->categories as $newCategoryDTO) {
                 if (!$originalCategories->contains($newCategoryDTO)) {
-                    $category = $this->categoryManager->find($newCategoryDTO->id ?? 0);
+                    $category = ($newCategoryDTO->id !== null) ? $this->categoryManager->find(Uuid::fromString($newCategoryDTO->id)) : null;
                     if (!$category) {
                         $category = $this->categoryManager->create();
                         $category->setName($newCategoryDTO->name);
