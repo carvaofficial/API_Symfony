@@ -39,28 +39,39 @@ class CategoryRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Category[] Returns an array of Category objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return Category[] Returns an array of Category objects
+     */
+    // public function findByExampleField($value): array
+    // {
+    //     return $this->createQueryBuilder('c')
+    //         ->andWhere('c.exampleField = :val')
+    //         ->setParameter('val', $value)
+    //         ->orderBy('c.id', 'ASC')
+    //         ->setMaxResults(10)
+    //         ->getQuery()
+    //         ->getResult();
+    // }
 
-//    public function findOneBySomeField($value): ?Category
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    // public function findOneBySomeField($value): ?Category
+    // {
+    //     return $this->createQueryBuilder('c')
+    //         ->andWhere('c.exampleField = :val')
+    //         ->setParameter('val', $value)
+    //         ->getQuery()
+    //         ->getOneOrNullResult();
+    // }
+
+    public function save(Category $category): Category
+    {
+        $this->getEntityManager()->persist($category);
+        $this->getEntityManager()->flush();
+        return $category;
+    }
+
+    public function reload(Category $category): Category
+    {
+        $this->getEntityManager()->refresh($category);
+        return $category;
+    }
 }
