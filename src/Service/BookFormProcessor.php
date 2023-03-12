@@ -3,42 +3,60 @@
 namespace App\Service;
 
 use App\Entity\Book;
+use App\Entity\Book\Score;
 use App\Form\Model\BookDTO;
 use App\Form\Model\CategoryDTO;
 use App\Form\Type\BookFormType;
 use App\Repository\BookRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\CategoryRepository;
+use App\Service\Book\GetBook;
+use App\Service\Category\CreateCategory;
+use App\Service\Category\GetCategory;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class BookFormProcessor
 {
     private BookRepository $bookRepository;
-    private CategoryManager $categoryManager;
+
+    private GetBook $getBook;
+
+    private CategoryRepository $categoryRepository;
+
+    private GetCategory $getCategory;
+
+    private CreateCategory $createCategory;
+
     private FileUploader $fileUploader;
+
     private FormFactoryInterface $ffi;
 
-    public function __construct(BookRepository $bookRepository, CategoryManager $categoryManager, FileUploader $fileUploader, FormFactoryInterface $ffi)
+    public function __construct(BookRepository $bookRepository, GetBook $getBook, CategoryRepository $categoryRepository, GetCategory $getCategory, CreateCategory $createCategory, FileUploader $fileUploader, FormFactoryInterface $ffi)
     {
         $this->bookRepository = $bookRepository;
-        $this->categoryManager = $categoryManager;
+        $this->getBook = $getBook;
+        $this->categoryRepository = $categoryRepository;
+        $this->getCategory = $getCategory;
+        $this->createCategory = $createCategory;
         $this->fileUploader = $fileUploader;
         $this->ffi = $ffi;
     }
 
-    public function __invoke(Book $book, Request $request): array
+    public function __invoke(Request $request, ?string $bookId = null): array
     {
-        $bookDTO = BookDTO::createFromBook($book);
+        $book = null;
+        $bookDTO = null;
 
-        /**
-         * @var CategoryDTO[]|ArrayCollection $originalCategories
-         */
-        $originalCategories = new ArrayCollection();
+        if ($bookId === null) {
+            $book = Book::create();
+            $bookDTO = BookDTO::createEmpty();
+        } else {
+            $book = ($this->getBook)($bookId);
+            $bookDTO = BookDTO::createFromBook($book);
 
-        foreach ($book->getCategories() as $category) {
-            $categoryDTO = CategoryDTO::createFromBook($category);
-            $bookDTO->categories[] = $categoryDTO;
-            $originalCategories->add($categoryDTO);
+            foreach ($book->getCategories() as $category) {
+                $bookDTO->categories[] = CategoryDTO::createFromCategory($category);
+            }
         }
 
         $form = $this->ffi->create(BookFormType::class, $bookDTO);
@@ -46,41 +64,31 @@ class BookFormProcessor
         if (!$form->isSubmitted()) {
             return [null, 'Form is not submitted'];
         }
-
-        if ($form->isValid()) {
-            // Remove categories
-            foreach ($originalCategories as $originalCategoryDTO) {
-                if (!\in_array($originalCategoryDTO, $bookDTO->categories)) {
-                    $category = $this->categoryManager->find($originalCategoryDTO->getId());
-                    $book->removeCategory($category);
-                }
-            }
-
-            // Add categories
-            foreach ($bookDTO->getCategories() as $newCategoryDTO) {
-                if (!$originalCategories->contains($newCategoryDTO)) {
-                    $category = ($newCategoryDTO->getId() !== null) ? $this->categoryManager->find($newCategoryDTO->getId()) : null;
-                    if (!$category) {
-                        $category = $this->categoryManager->create();
-                        $category->setName($newCategoryDTO->getName());
-                        $this->categoryManager->persist($category);
-                    }
-
-                    $book->addCategory($category);
-                }
-            }
-
-            $book->setTitle($bookDTO->title);
-            if ($bookDTO->base64Image) {
-                $filename = $this->fileUploader->uploadBase64File($bookDTO->base64Image);
-                $book->setImage($filename);
-            }
-
-            $this->bookRepository->save($book);
-
-            return [$book, null];
+        if (!$form->isValid()) {
+            return [null, $form];
         }
 
-        return [null, $form];
+        $categories = [];
+
+        foreach ($bookDTO->getCategories() as $newCategoryDTO) {
+            $category = ($newCategoryDTO->getId() !== null) ? ($this->getCategory)($newCategoryDTO->getId()) : null;
+            if (!$category) {
+                $category = ($this->createCategory)($newCategoryDTO->getName());
+            }
+            $categories[] = $category;
+        }
+
+        $filename = ($bookDTO->getBase64Image()) ? $this->fileUploader->uploadBase64File($bookDTO->base64Image) : null;
+
+        $book->update(
+            $bookDTO->getTitle(),
+            $filename,
+            $bookDTO->getDescription(),
+            Score::create($bookDTO->getScore()),
+            ...$categories
+        );
+        $this->bookRepository->save($book);
+
+        return [$book, null];
     }
 }

@@ -8,6 +8,8 @@ class BookDTO
 {
     public ?string $title = null;
     public ?string $base64Image = null;
+    public ?string $description = null;
+    public ?int $score = null;
     /**
      *
      * @var CategoryDTO[]|null
@@ -17,6 +19,11 @@ class BookDTO
     public function __construct()
     {
         $this->categories = [];
+    }
+
+    public static function createEmpty(): self
+    {
+        return new self();
     }
 
     public static function createFromBook(Book $book): self
@@ -44,5 +51,15 @@ class BookDTO
     public function getCategories(): ?array
     {
         return $this->categories;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getScore(): ?int
+    {
+        return $this->score;
     }
 }

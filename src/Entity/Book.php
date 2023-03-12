@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Book\Score;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\Uuid;
@@ -9,18 +10,23 @@ use Ramsey\Uuid\UuidInterface;
 
 class Book
 {
-    private $id;
+    private UuidInterface $id;
 
-    private $title;
+    private string $title;
 
-    private $image;
+    private ?string $image;
 
-    private $Categories;
+    private ?string $description;
+
+    private ?Score $score;
+
+    private Collection $categories;
 
     public function __construct(UuidInterface $uuidInterface)
     {
         $this->id = $uuidInterface;
-        $this->Categories = new ArrayCollection();
+        $this->score = Score::create();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface
@@ -52,18 +58,35 @@ class Book
         return $this;
     }
 
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getScore(): ?Score
+    {
+        return $this->score;
+    }
+
+    public function setScore(?Score $score): self
+    {
+        $this->score = $score;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Category>
      */
     public function getCategories(): Collection
     {
-        return $this->Categories;
+        return $this->categories;
     }
 
     public function addCategory(Category $category): self
     {
-        if (!$this->Categories->contains($category)) {
-            $this->Categories[] = $category;
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
         }
 
         return $this;
@@ -71,7 +94,7 @@ class Book
 
     public function removeCategory(Category $category): self
     {
-        $this->Categories->removeElement($category);
+        $this->categories->removeElement($category);
 
         return $this;
     }
@@ -79,5 +102,44 @@ class Book
     public static function create(): self
     {
         return new self(Uuid::uuid4());
+    }
+
+    public function update(
+        string $title,
+        ?string $image,
+        ?string $description,
+        ?Score $score,
+        Category ...$categories
+    ) {
+        $this->title = $title;
+        $this->image = $image;
+        $this->description = $description;
+        $this->score = $score;
+        $this->updateCategories(...$categories);
+    }
+
+    public function updateCategories(Category ...$categories)
+    {
+        /**
+         * @var Category[]|ArrayCollection $originalCategories
+         */
+        $originalCategories = new ArrayCollection();
+        foreach ($this->categories as $category) {
+            $originalCategories->add($category);
+        }
+
+        // Remove categories
+        foreach ($originalCategories as $originalCategory) {
+            if (!\in_array($originalCategory, $categories)) {
+                $this->removeCategory($originalCategory);
+            }
+        }
+
+        // Add categories
+        foreach ($categories as $newCategory) {
+            if (!$originalCategories->contains($newCategory)) {
+                $this->addCategory($newCategory);
+            }
+        }
     }
 }

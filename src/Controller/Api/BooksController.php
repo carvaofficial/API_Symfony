@@ -55,7 +55,7 @@ class BooksController extends AbstractFOSRestController
     public function postAction(BookFormProcessor $bfp, Request $request)
     {
         $book = Book::create();
-        [$book, $error] = ($bfp)($book, $request);
+        [$book, $error] = ($bfp)($request);
 
         return View::create($book ?? $error, $book ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST);
     }
@@ -84,7 +84,7 @@ class BooksController extends AbstractFOSRestController
             return View::create('Book not found', Response::HTTP_BAD_REQUEST);
         }
 
-        [$book, $error] = ($bfp)($book, $request);
+        [$book, $error] = ($bfp)($request, $id);
 
         return View::create($book ?? $error, $book ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST);
     }

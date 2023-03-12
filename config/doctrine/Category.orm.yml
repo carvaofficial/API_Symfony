@@ -18,7 +18,7 @@ App\Entity\Category:
             targetEntity: App\Entity\Book
             cascade: {  }
             fetch: LAZY
-            mappedBy: Categories
+            mappedBy: categories
             inversedBy: null
             joinTable: {  }
             orderBy: null

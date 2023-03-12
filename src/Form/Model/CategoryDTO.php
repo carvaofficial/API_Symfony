@@ -10,7 +10,7 @@ class CategoryDTO
     public ?UuidInterface $id = null;
     public ?string $name = null;
 
-    public static function createFromBook(Category $category): self
+    public static function createFromCategory(Category $category): self
     {
         $dto = new self();
         $dto->id = $category->getId();
