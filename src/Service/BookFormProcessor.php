@@ -6,24 +6,21 @@ use App\Entity\Book;
 use App\Form\Model\BookDTO;
 use App\Form\Model\CategoryDTO;
 use App\Form\Type\BookFormType;
+use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class BookFormProcessor
 {
-    private $em;
-    private $bookManager;
-    private $categoryManager;
-    private $fileUploader;
-    private $ffi;
+    private BookRepository $bookRepository;
+    private CategoryManager $categoryManager;
+    private FileUploader $fileUploader;
+    private FormFactoryInterface $ffi;
 
-    public function __construct(EntityManagerInterface $em, BookManager $bookManager, CategoryManager $categoryManager, FileUploader $fileUploader, FormFactoryInterface $ffi)
+    public function __construct(BookRepository $bookRepository, CategoryManager $categoryManager, FileUploader $fileUploader, FormFactoryInterface $ffi)
     {
-        $this->em = $em;
-        $this->bookManager = $bookManager;
+        $this->bookRepository = $bookRepository;
         $this->categoryManager = $categoryManager;
         $this->fileUploader = $fileUploader;
         $this->ffi = $ffi;
@@ -33,6 +30,9 @@ class BookFormProcessor
     {
         $bookDTO = BookDTO::createFromBook($book);
 
+        /**
+         * @var CategoryDTO[]|ArrayCollection $originalCategories
+         */
         $originalCategories = new ArrayCollection();
 
         foreach ($book->getCategories() as $category) {
@@ -51,18 +51,18 @@ class BookFormProcessor
             // Remove categories
             foreach ($originalCategories as $originalCategoryDTO) {
                 if (!\in_array($originalCategoryDTO, $bookDTO->categories)) {
-                    $category = $this->categoryManager->find(Uuid::fromString($originalCategoryDTO->id));
+                    $category = $this->categoryManager->find($originalCategoryDTO->getId());
                     $book->removeCategory($category);
                 }
             }
 
             // Add categories
-            foreach ($bookDTO->categories as $newCategoryDTO) {
+            foreach ($bookDTO->getCategories() as $newCategoryDTO) {
                 if (!$originalCategories->contains($newCategoryDTO)) {
-                    $category = ($newCategoryDTO->id !== null) ? $this->categoryManager->find(Uuid::fromString($newCategoryDTO->id)) : null;
+                    $category = ($newCategoryDTO->getId() !== null) ? $this->categoryManager->find($newCategoryDTO->getId()) : null;
                     if (!$category) {
                         $category = $this->categoryManager->create();
-                        $category->setName($newCategoryDTO->name);
+                        $category->setName($newCategoryDTO->getName());
                         $this->categoryManager->persist($category);
                     }
 
@@ -76,8 +76,7 @@ class BookFormProcessor
                 $book->setImage($filename);
             }
 
-            $this->bookManager->save($book);
-            $this->bookManager->reload($book);
+            $this->bookRepository->save($book);
 
             return [$book, null];
         }

@@ -6,9 +6,13 @@ use App\Entity\Book;
 
 class BookDTO
 {
-    public $title;
-    public $base64Image;
-    public $categories;
+    public ?string $title = null;
+    public ?string $base64Image = null;
+    /**
+     *
+     * @var CategoryDTO[]|null
+     */
+    public ?array $categories = [];
 
     public function __construct()
     {
@@ -21,5 +25,24 @@ class BookDTO
         $dto->title = $book->getTitle();
 
         return $dto;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function getBase64Image(): ?string
+    {
+        return $this->base64Image;
+    }
+
+    /**
+     *
+     * @return CategoryDTO[]|null
+     */
+    public function getCategories(): ?array
+    {
+        return $this->categories;
     }
 }

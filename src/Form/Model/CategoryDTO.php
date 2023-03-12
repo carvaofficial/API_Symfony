@@ -3,11 +3,12 @@
 namespace App\Form\Model;
 
 use App\Entity\Category;
+use Ramsey\Uuid\UuidInterface;
 
 class CategoryDTO
 {
-    public $id;
-    public $name;
+    public ?UuidInterface $id = null;
+    public ?string $name = null;
 
     public static function createFromBook(Category $category): self
     {
@@ -16,5 +17,15 @@ class CategoryDTO
         $dto->name = $category->getName();
 
         return $dto;
+    }
+
+    public function getId(): ?UuidInterface
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
     }
 }
