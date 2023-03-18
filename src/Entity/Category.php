@@ -70,4 +70,9 @@ class Category
     {
         return new self(Uuid::uuid4(), $name);
     }
+
+    public function __toString(): string
+    {
+        return $this->getName() ?? 'Categoría';
+    }
 }

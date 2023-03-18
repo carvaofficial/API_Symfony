@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Entity\Book\Score;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
@@ -141,5 +142,10 @@ class Book
                 $this->addCategory($newCategory);
             }
         }
+    }
+
+    public function __toString(): string
+    {
+        return $this->getTitle() ?? 'Libro';
     }
 }

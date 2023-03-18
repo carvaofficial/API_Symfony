@@ -33,3 +33,27 @@ services:
     App\Security\TokenAuthenticator:
         arguments:
             $apiToken: "%api_token%"
+
+    admin.category:
+        class: App\Admin\CategoryAdmin
+        tags:
+            - {
+                  name: sonata.admin,
+                  model_class: App\Entity\Category,
+                  controller: ~,
+                  manager_type: orm,
+                  group: admin,
+                  label: "Categoría",
+              }
+
+    admin.book:
+        class: App\Admin\BookAdmin
+        tags:
+            - {
+                  name: sonata.admin,
+                  model_class: App\Entity\Book,
+                  controller: ~,
+                  manager_type: orm,
+                  group: admin,
+                  label: "Libro",
+              }
