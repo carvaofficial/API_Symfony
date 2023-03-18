@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Book;
 
 use App\Entity\Book;
 use App\Entity\Book\Score;
@@ -12,6 +12,7 @@ use App\Repository\CategoryRepository;
 use App\Service\Book\GetBook;
 use App\Service\Category\CreateCategory;
 use App\Service\Category\GetCategory;
+use App\Service\FileUploader;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -31,8 +32,15 @@ class BookFormProcessor
 
     private FormFactoryInterface $ffi;
 
-    public function __construct(BookRepository $bookRepository, GetBook $getBook, CategoryRepository $categoryRepository, GetCategory $getCategory, CreateCategory $createCategory, FileUploader $fileUploader, FormFactoryInterface $ffi)
-    {
+    public function __construct(
+        BookRepository $bookRepository,
+        GetBook $getBook,
+        CategoryRepository $categoryRepository,
+        GetCategory $getCategory,
+        CreateCategory $createCategory,
+        FileUploader $fileUploader,
+        FormFactoryInterface $ffi
+    ) {
         $this->bookRepository = $bookRepository;
         $this->getBook = $getBook;
         $this->categoryRepository = $categoryRepository;

@@ -4,9 +4,9 @@ namespace App\Controller\Api;
 
 use App\Entity\Book;
 use App\Repository\BookRepository;
+use App\Service\Book\BookFormProcessor;
 use App\Service\Book\DeleteBook;
 use App\Service\Book\GetBook;
-use App\Service\BookFormProcessor;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;

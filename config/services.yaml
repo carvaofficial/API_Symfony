@@ -57,3 +57,15 @@ services:
                   group: admin,
                   label: "Libro",
               }
+
+    admin.author:
+        class: App\Admin\AuthorAdmin
+        tags:
+            - {
+                  name: sonata.admin,
+                  model_class: App\Entity\Author,
+                  controller: ~,
+                  manager_type: orm,
+                  group: admin,
+                  label: "Autor",
+              }
