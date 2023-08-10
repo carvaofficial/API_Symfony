@@ -15,6 +15,7 @@ use App\Service\Category\GetCategory;
 use App\Service\FileUploader;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class BookFormProcessor
 {
@@ -32,6 +33,8 @@ class BookFormProcessor
 
     private FormFactoryInterface $ffi;
 
+    private EventDispatcherInterface $eventDispatcher;
+
     public function __construct(
         BookRepository $bookRepository,
         GetBook $getBook,
@@ -39,7 +42,8 @@ class BookFormProcessor
         GetCategory $getCategory,
         CreateCategory $createCategory,
         FileUploader $fileUploader,
-        FormFactoryInterface $ffi
+        FormFactoryInterface $ffi,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->bookRepository = $bookRepository;
         $this->getBook = $getBook;
@@ -48,6 +52,7 @@ class BookFormProcessor
         $this->createCategory = $createCategory;
         $this->fileUploader = $fileUploader;
         $this->ffi = $ffi;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function __invoke(Request $request, ?string $bookId = null): array
@@ -93,9 +98,14 @@ class BookFormProcessor
             $filename,
             $bookDTO->getDescription(),
             Score::create($bookDTO->getScore()),
-            ...$categories
+            $categories,
+            []
         );
         $this->bookRepository->save($book);
+
+        foreach ($book->pullDomainEvents() as $event) {
+            $this->eventDispatcher->dispatch($event);
+        }
 
         return [$book, null];
     }

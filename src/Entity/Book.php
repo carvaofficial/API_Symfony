@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use App\Entity\Book\Score;
+use App\Event\Book\BookCreatedEvent;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class Book
 {
@@ -24,6 +26,8 @@ class Book
     private Collection $categories;
 
     private Collection $authors;
+
+    private array $domainEvents = [];
 
     public function __construct(UuidInterface $uuidInterface)
     {
@@ -127,9 +131,21 @@ class Book
         return $this;
     }
 
+    public function addDomainEvent(Event $event): void
+    {
+        $this->domainEvents[] = $event;
+    }
+
+    public function pullDomainEvents(): array
+    {
+        return $this->domainEvents;
+    }
+
     public static function create(): self
     {
-        return new self(Uuid::uuid4());
+        $book = new self(Uuid::uuid4());
+        $book->addDomainEvent(new BookCreatedEvent($book->getId()));
+        return $book;
     }
 
     public function update(

@@ -22,6 +22,7 @@ class BooksController extends AbstractFOSRestController
      *  */
     public function getAction(BookRepository $bookRepository)
     {
+        dump($bookRepository->findAll());
         return $bookRepository->findAll();
     }
 
