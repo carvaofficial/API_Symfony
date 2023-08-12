@@ -1,8 +1,8 @@
 <?php
 
-namespace App\EventSubscriber\Book;
+namespace App\EventSubscriber;
 
-use App\Event\Book\BookCreatedEvent;
+use App\Event\BookCreatedEvent;
 use App\Service\Book\GetBook;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

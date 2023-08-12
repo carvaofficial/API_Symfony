@@ -72,8 +72,10 @@ class BookFormProcessor
             }
         }
 
+        $content = json_decode($request->getContent(), true);
         $form = $this->ffi->create(BookFormType::class, $bookDTO);
-        $form->handleRequest($request);
+        // $form->handleRequest($request);
+        $form->submit($content);
         if (!$form->isSubmitted()) {
             return [null, 'Form is not submitted'];
         }

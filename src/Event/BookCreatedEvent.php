@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Event\Book;
+namespace App\Event;
 
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Contracts\EventDispatcher\Event;
